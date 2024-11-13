@@ -1,0 +1,23 @@
+{
+  "name": "choctaw-visual-testing",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/visualComparisonTest.spec.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.48.2",
+    "@types/node": "^22.9.0"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "pixelmatch": "^6.0.0",
+    "playwright": "^1.48.2",
+    "pngjs": "^7.0.0"
+  }
+}
