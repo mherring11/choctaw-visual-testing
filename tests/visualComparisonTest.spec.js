@@ -6,7 +6,6 @@ import config from '../config.js';
 
 test.describe('Visual Comparison Tests', () => {
   test('Compare staging and production screenshots', async ({ browser }) => {
-    // Create a new context with HTTP credentials for the staging site
     const context = await browser.newContext({
       httpCredentials: {
         username: 'choctawcstg',
@@ -15,7 +14,6 @@ test.describe('Visual Comparison Tests', () => {
     });
     const page = await context.newPage();
 
-    // Ensure screenshots directories exist
     if (!fs.existsSync('screenshots')) fs.mkdirSync('screenshots');
     if (!fs.existsSync('screenshots/staging')) fs.mkdirSync('screenshots/staging');
     if (!fs.existsSync('screenshots/prod')) fs.mkdirSync('screenshots/prod');
@@ -32,11 +30,9 @@ test.describe('Visual Comparison Tests', () => {
       console.log(`Testing page: ${pagePath || 'home'}`);
 
       try {
-        // Capture staging and production screenshots with retries
         await captureScreenshot(page, stagingUrl, stagingScreenshotPath);
         await captureScreenshot(page, prodUrl, prodScreenshotPath);
 
-        // Compare screenshots and save the diff image
         const similarityPercentage = compareScreenshots(stagingScreenshotPath, prodScreenshotPath, diffScreenshotPath);
 
         if (similarityPercentage === -1) {
@@ -48,22 +44,20 @@ test.describe('Visual Comparison Tests', () => {
         console.log(`Error testing page: ${pagePath || 'home'} - ${error.message}`);
       }
     }
-  }, { timeout: 150000 }); // Set the overall test timeout to 2 minutes
+  }, { timeout: 150000 });
 });
 
-// Helper function to capture screenshots with retries
 async function captureScreenshot(page, url, path) {
   let attempts = 0;
   const maxAttempts = 3;
-  const timeout = 120000; // 2 minutes
+  const timeout = 150000;
 
   while (attempts < maxAttempts) {
     try {
       await page.setViewportSize({ width: 1280, height: 720 });
-      // Use 'networkidle' or 'load' depending on page behavior
       await page.goto(url, { waitUntil: 'networkidle', timeout });
       await page.screenshot({ path });
-      break; // Exit loop if successful
+      break;
     } catch (error) {
       attempts++;
       console.log(`Attempt ${attempts} failed for ${url}. Retrying...`);
@@ -75,7 +69,6 @@ async function captureScreenshot(page, url, path) {
   }
 }
 
-// Helper function to compare screenshots and return similarity percentage
 function compareScreenshots(stagingPath, prodPath, diffPath) {
   const img1 = PNG.sync.read(fs.readFileSync(stagingPath));
   const img2 = PNG.sync.read(fs.readFileSync(prodPath));
